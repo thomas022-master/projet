@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robot">
+
+	<!--déclaration des valeurs constante xacro-->
+    <xacro:property name="roue_rayon" value="0.04"/>
+    <xacro:property name="roue_long" value="0.07"/>
+    <xacro:property name="roue_masse" value="1"/>
+	<xacro:property name="chassis_masse" value="5"/>
+	<xacro:property name="chassis_longeur" value="0.28"/>
+	<xacro:property name="chassis_largeur" value="0.15"/>
+	<xacro:property name="chassis_hauteur" value="0.15"/>
+	<xacro:property name="antenne_rayon" value="0.01"/>
+	<xacro:property name="antenne_longeur" value="0.10"/>
+
+<!-- macro -->
+    <!-- calcule de la mtrice d'inertie pour un cylindre-->
+    <xacro:macro name="inertie_cylindre" params="masse rayon longeur">
+        <inertial>
+            <mass value="${masse}"/>
+            <inertia ixx="${masse/12*(3*rayon*rayon + longeur*longeur)}" ixy="0.0" ixz="0.0" 
+            iyx="0.0" iyy="${masse/12*(3*rayon*rayon + longeur*longeur)}" iyz="0.0" 
+            izx="0.0" izy="0.0" izz="${masse/2*(rayon*rayon)}"/>
+        </inertial>
+    </xacro:macro>
+
+    <!-- calcule de la matrice d'inertie pour une box-->
+    <xacro:macro name="inertie_boite" params="masse l w h">
+        <inertial>
+            <mass value="${masse}" />
+            <inertia ixx="${masse/3*(w*w + h*h)}" ixy="${masse/4*l*w}" ixz="${masse/4*l*h}" 
+            iyx="0.0" iyy="${masse/3*(l*l + h*h)}" iyz="${masse/4*w*h}" 
+            izx="0.0" izy="0.0" izz="${masse/3*(l*l + w*w)}"/>
+        </inertial>
+    </xacro:macro>
+<!--==============================-->
+
+<!-- chassis du robot-->
+	<link name="base_link">
+		<visual>
+			<geometry>
+				<box size="${chassis_longeur} ${chassis_largeur} ${chassis_hauteur}"/>
+			</geometry>
+        </visual>
+		<collision>
+			<geometry>
+				<box size="${chassis_longeur} ${chassis_largeur} ${chassis_hauteur}"/>
+			</geometry>
+		</collision>
+	</link>
+<!-- ============================== -->
+
+<!-- inertie du chassis du robot-->
+	<link name="base_inertie">
+		<xacro:inertie_boite masse="${chassis_masse}" l="${chassis_longeur}" w="${chassis_largeur}" h="${chassis_hauteur}"/>
+	</link>
+	<!-- liaison cinematique-->
+	<joint name="joint_base_inertie" type="fixed">
+    	<parent link="base_link"/>
+    	<child link="base_inertie"/>
+  	</joint>
+<!-- ============================== -->
+
+<!-- support camera -->
+	<link name="Support_Cam">
+		<visual>
+			<origin rpy="0.0 0.0 0.0" xyz="0.01 0.0 0.0"/>
+			<geometry>
+				<box size="0.02 0.05 0.05"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin rpy="0.0 0.0 0.0" xyz="0.01 0.0 0.0"/>
+			<geometry>
+				<box size="0.02 0.05 0.05"/>
+			</geometry>
+		</collision>
+	</link>
+	<!-- liaison cinematique-->
+	<joint name="joint_Support_Cam" type="fixed">
+		<origin xyz="0.14 0.0 0.02" rpy="0.0 0.0 0.0"/>
+    	<parent link="base_link"/>
+    	<child link="Support_Cam"/>
+  	</joint>
+<!-- ============================== -->
+
+<!-- Antenne 1 du robot -->
+	<link name="antenne1">
+		<visual>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.05"/>
+			<geometry>
+				<cylinder radius="${antenne_rayon}" length="${antenne_longeur}"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.05"/>
+			<geometry>
+				<cylinder radius="${antenne_rayon}" length="${antenne_longeur}"/>
+			</geometry>
+		</collision>
+	</link>
+	<!-- liaison cinematique-->
+	<joint name="joint_antenne1" type="fixed">
+		<origin rpy="0.0 0.0 0.0" xyz="-0.10 0.03 0.075"/>
+    	<parent link="base_link"/>
+    	<child link="antenne1"/>
+  	</joint>
+<!-- ============================== -->
+
+<!-- Antenne 2 du robot -->
+	<link name="antenne2">
+		<visual>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.05"/>
+			<geometry>
+				<cylinder radius="${antenne_rayon}" length="${antenne_longeur}"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.05"/>
+			<geometry>
+				<cylinder radius="${antenne_rayon}" length="${antenne_longeur}"/>
+			</geometry>
+		</collision>
+	</link>
+	<!-- liaison cinematique-->
+	<joint name="joint_antenne2" type="fixed">
+		<origin rpy="0.0 0.0 0.0" xyz="-0.10 -0.03 0.075"/>
+    	<parent link="base_link"/>
+    	<child link="antenne2"/>
+  	</joint>
+<!-- ============================== -->
+
+<!-- roue avant droite du robot -->
+	<link name="Roue_AD">
+		<visual>
+			<origin rpy="1.57 0.0 0.0" xyz="0.0 0.035 0.0"/>
+			<geometry>
+			    <cylinder radius="${roue_rayon}" length="${roue_long}"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin rpy="1.57 0.0 0.0" xyz="0.0 0.035 0.0"/>
+			<geometry>
+				<cylinder radius="${roue_rayon}" length="${roue_long}"/>
+			</geometry>
+		</collision>
+        <!-- appel de la macro d'inertie-->
+        <xacro:inertie_cylindre masse="${roue_masse}" longeur="${roue_long}" rayon="${roue_rayon}"/>
+	</link>
+	<!-- liaison cinematique-->
+	<joint name="joint_Roue_AD" type="continuous">
+		<origin xyz="0.10 0.075 -0.06" rpy="0.0 0.0 0.0"/>
+		<parent link="base_link"/>
+		<child link="Roue_AD"/>
+		<axis xyz="0.0 1 0.0"/>
+	</joint>
+<!-- ============================== -->
+
+<!-- roue arriere droite du robot -->
+	<link name="Roue_DD">
+		<visual>
+			<origin rpy="1.57 0.0 0.0" xyz="0.0 0.035 0.0"/>
+			<geometry>
+				<cylinder radius="${roue_rayon}" length="${roue_long}"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin rpy="1.57 0.0 0.0" xyz="0.0 0.035 0.0"/>
+			<geometry>
+				<cylinder radius="${roue_rayon}" length="${roue_long}"/>
+			</geometry>
+		</collision>
+        <!-- appel de la macro d'inertie-->
+        <xacro:inertie_cylindre masse="${roue_masse}" longeur="${roue_long}" rayon="${roue_rayon}"/>
+	</link>
+	<!-- liaison cinematique-->
+	<joint name="joint_Roue_DD" type="continuous">
+		<origin xyz="-0.10 0.075 -0.06" rpy="0.0 0.0 0.0"/>
+		<parent link="base_link"/>
+		<child link="Roue_DD"/>
+		<axis xyz="0.0 1 0.0"/>
+	</joint>
+<!-- ============================== -->
+
+<!-- roue avant gauche du robot -->
+	<link name="Roue_AG">
+		<visual>
+			<origin rpy="1.57 0.0 0.0" xyz="0.0 -0.035 0.0"/>
+			<geometry>
+				<cylinder radius="${roue_rayon}" length="${roue_long}"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin rpy="1.57 0.0 0.0" xyz="0.0 -0.035 0.0"/>
+			<geometry>
+				<cylinder radius="${roue_rayon}" length="${roue_long}"/>
+			</geometry>
+		</collision>
+        <!-- appel de la macro d'inertie-->
+        <xacro:inertie_cylindre masse="${roue_masse}" longeur="${roue_long}" rayon="${roue_rayon}"/>
+	</link>
+	<!-- liaison cinematique-->
+	<joint name="joint_Roue_AG" type="continuous">
+		<origin xyz="0.10 -0.075 -0.06" rpy="0.0 0.0 0.0"/>
+		<parent link="base_link"/>
+		<child link="Roue_AG"/>
+		<axis xyz="0.0 1 0.0"/>
+	</joint>
+<!-- ============================== -->
+
+<!-- roue avant gauche du robot -->
+	<link name="Roue_DG">
+		<visual>
+			<origin rpy="1.57 0.0 0.0" xyz="0.0 -0.035 0.0"/>
+			<geometry>
+				<cylinder radius="${roue_rayon}" length="${roue_long}"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin rpy="1.57 0.0 0.0" xyz="0.0 -0.035 0.0"/>
+			<geometry>
+				<cylinder radius="${roue_rayon}" length="${roue_long}"/>
+			</geometry>
+		</collision>
+        <!-- appel de la macro d'inertie-->
+        <xacro:inertie_cylindre masse="${roue_masse}" longeur="${roue_long}" rayon="${roue_rayon}"/>
+	</link>
+	<!-- liaison cinematique-->
+	<joint name="joint_Roue_DG" type="continuous">
+		<origin xyz="-0.10 -0.075 -0.06" rpy="0.0 0.0 0.0"/>
+		<parent link="base_link"/>
+		<child link="Roue_DG"/>
+		<axis xyz="0.0 1 0.0"/>
+	</joint>
+<!-- ============================== -->
+</robot>

@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<sdf version='1.4'>
+    <world name='default'>
+        <!-- il inclut le soleil dans le world-->
+        <include>
+            <uri>model://sun</uri>  
+        </include>
+
+        <!--modification des spécificités visuel de l'environnement-->
+        <scene>
+            <!--modification de la lumière ambiente-->
+            <ambient>0.5 0.5 0.5 1</ambient>
+            <!--modification de la couleur de l'arrière plan-->
+            <background>0.0 0.0 0.1 1</background>
+            <!--désactivation des ombres-->
+            <shadows>0</shadows>
+        </scene>
+        
+        <!-- création de la salle-->
+        <model name='salle'>
+            <!-- rend la salle statique-->
+            <static>1</static>
+            <!--création 1er mur-->
+            <link name='mur1'>
+                <visual name='visual'>
+                    <pose>0 5 0.5 0 0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>9 1 1</size>
+                        </box>
+                    </geometry>
+                    <material>
+                        <script>
+                            <!--affichage du mur en bleu-->
+                            <uri>file://media/materials/scripts/gazebo.material</uri>
+                            <name>Gazebo/SkyBlue</name>
+                        </script>
+                    </material>
+                </visual>
+                <!--paramètrage de la collision-->
+                <collision name='collision'>
+                    <pose>0 5 0.5 0 0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>9 1 1</size>
+                        </box>
+                    </geometry>
+                </collision>
+            </link>
+            <!--création 2eme mur-->
+            <link name='mur2'>
+                <visual name='visual'>
+                    <pose>0 -5 0.5 0 0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>9 1 1</size>
+                        </box>
+                    </geometry>
+                    <material>
+                        <script>
+                            <!--affichage du mur en bleu-->
+                            <uri>file://media/materials/scripts/gazebo.material</uri>
+                            <name>Gazebo/SkyBlue</name>
+                        </script>
+                    </material>
+                </visual>
+                <!--paramètrage de la collision-->
+                <collision name='collision'>
+                    <pose>0 -5 0.5 0 0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>9 1 1</size>
+                        </box>
+                    </geometry>
+                </collision>
+            </link>
+            <!--création 3eme mur-->
+            <link name='mur3'>
+                <visual name='visual'>
+                    <pose>5 0 0.5 0 0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>1 9 1</size>
+                        </box>
+                    </geometry>
+                    <material>
+                        <script>
+                            <!--affichage du mur en bleu-->
+                            <uri>file://media/materials/scripts/gazebo.material</uri>
+                            <name>Gazebo/SkyBlue</name>
+                        </script>
+                    </material>
+                </visual>
+                <!--paramètrage de la collision-->
+                <collision name='collision'>
+                    <pose>5 0 0.5 0 0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>1 9 1</size>
+                        </box>
+                    </geometry>
+                </collision>
+            </link>
+            <!--création 4eme mur-->
+            <link name='mur4'>
+                <visual name='visual'>
+                    <pose>-5 0 0.5 0 0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>1 9 1</size>
+                        </box>
+                    </geometry>
+                    <material>
+                        <script>
+                            <!--affichage du mur en bleu-->
+                            <uri>file://media/materials/scripts/gazebo.material</uri>
+                            <name>Gazebo/SkyBlue</name>
+                        </script>
+                    </material>
+                </visual>
+                <!--paramètrage de la collision-->
+                <collision name='collision'>
+                    <pose>-5 0 0.5 0 0 0</pose>
+                    <geometry>
+                        <box>
+                            <size>1 9 1</size>
+                        </box>
+                    </geometry>
+                </collision>
+            </link>
+        </model>
+
+        <!--création du sol-->
+        <model name='ground_plane'>
+            <static>1</static>
+            <link name='link'>
+                <collision name='collision'>
+                    <geometry>
+                        <plane>
+                            <normal>0 0 1</normal>
+                            <size>10 10</size>
+                        </plane>
+                    </geometry>
+                    <surface>
+                        <!--paramètrage des coefficients de frottrment-->
+                        <friction>
+                            <ode>
+                                <mu>100</mu>
+                                <mu2>50</mu2>
+                            </ode>
+                        </friction>
+                    </surface>
+                    <!--nombre de contact maximum autorisée-->
+                    <max_contacts>10</max_contacts>
+                </collision>
+                <visual name='visual'>
+                    <geometry>
+                        <plane>
+                            <normal>0 0 1</normal>
+                            <size>10 10</size>
+                        </plane>
+                    </geometry>
+                    <material>
+                        <script>
+                            <!--affichage d'un sol en parket-->
+                            <uri>file://media/materials/scripts/gazebo.material</uri>
+                            <name>Gazebo/Wood</name>
+                        </script>
+                    </material>
+                </visual>
+                <!--activation de la gravité-->
+                <gravity>1</gravity>
+            </link>
+        </model>
+    </world>
+</sdf>
